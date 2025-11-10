@@ -877,7 +877,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1, y: 0, z: 2.72}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -895,6 +895,7 @@ GameObject:
   - component: {fileID: 1513615939}
   - component: {fileID: 1513615938}
   - component: {fileID: 1513615944}
+  - component: {fileID: 1513615945}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1007,11 +1008,28 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1513615936}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cd7a01fa5beb51c4881f89062dc4494a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MOV2
+  veficadorChao: {fileID: 592194290}
+  cenarioMask:
+    serializedVersion: 2
+    m_Bits: 64
+  alturaDoSalto: 1.5
+--- !u!114 &1513615945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1513615936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6042a69fa457df744b65a78989293e5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MOV
   veficadorChao: {fileID: 592194290}
   cenarioMask:
     serializedVersion: 2
