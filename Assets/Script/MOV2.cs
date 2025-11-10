@@ -1,33 +1,51 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MOV2 : MonoBehaviour
 {
     private Vector3 entradasJogador;
     private CharacterController characterController;
-    private float velocidade = 4f;
     private Transform myCamera;
     private bool estaNoChao;
-    [SerializeField] private Transform veficadorChao;
-    [SerializeField] private LayerMask cenarioMask;
+
+    [Header("Movimento")]
+    public float velocidadeNormal = 4f;
+    public float velocidadeAgachar = 2f;
+    public float velocidadeCorrida = 7f;
 
     [Header("Pulo")]
-    [SerializeField] private float alturaDoSalto = 1.5f;
-    private float gravidade = -20f;
+    public float alturaDoSalto = 1.5f;
+    public float gravidade = -20f;
     private float velocidadeVertical;
-    [SerializeField] private float custoPulo = 15f; // stamina gasta por pulo
+
+    [Header("Agachar")]
+    public float alturaAgachar = 1f;
+    private float alturaOriginal;
+    private Vector3 centroOriginal;
+    private Vector3 centroAgachar;
+    public float suavizacaoAgachar = 5f;
+
+    [Header("Chão")]
+    [SerializeField] private Transform veficadorChao;
+    [SerializeField] private LayerMask cenarioMask;
+    [SerializeField] private float raioChao = 0.3f;
 
     [Header("Stamina")]
     public float staminaMax = 100f;
     private float stamina;
     public float gastoCorrida = 20f;
     public float recuperacaoStamina = 15f;
-    public float delayRecuperacao = 1f; // segundos antes de regenerar
-    private float tempoDesdeUltimaAcao = 0f;
+    public Slider sliderStamina;
 
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
         myCamera = Camera.main.transform;
+
+        alturaOriginal = characterController.height;
+        centroOriginal = characterController.center;
+        centroAgachar = new Vector3(centroOriginal.x, alturaAgachar / 2f, centroOriginal.z);
+
         stamina = staminaMax;
     }
 
@@ -36,49 +54,74 @@ public class MOV2 : MonoBehaviour
         // Rotação de acordo com a câmera
         transform.eulerAngles = new Vector3(0, myCamera.eulerAngles.y, 0);
 
-        // Movimento no plano (WASD)
+        // Movimento horizontal
         entradasJogador = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
         entradasJogador = transform.TransformDirection(entradasJogador);
-        characterController.Move(entradasJogador * Time.deltaTime * velocidade);
 
-        // Verificação do chão
-        estaNoChao = Physics.CheckSphere(veficadorChao.position, 0.3f, cenarioMask);
+        // Verificação do chão usando veficadorChao
+        estaNoChao = Physics.CheckSphere(veficadorChao.position, raioChao, cenarioMask);
 
-        // Pulo com custo de stamina
-        if (Input.GetKeyDown(KeyCode.Space) && estaNoChao && stamina >= custoPulo)
+        // Pulo
+        if (Input.GetKeyDown(KeyCode.Space) && estaNoChao)
         {
             velocidadeVertical = Mathf.Sqrt(alturaDoSalto * -2f * gravidade);
-            stamina -= custoPulo;
-            if (stamina < 0) stamina = 0;
-            tempoDesdeUltimaAcao = 0f; // reseta delay
         }
 
-        // Aplicar gravidade natural
-        if (estaNoChao && velocidadeVertical < 0)
-            velocidadeVertical = -2f;
-
+        // Aplicar gravidade
         velocidadeVertical += gravidade * Time.deltaTime;
-        characterController.Move(Vector3.up * velocidadeVertical * Time.deltaTime);
 
-        // Corrida (mantendo simplicidade)
-        bool correndo = Input.GetKey(KeyCode.LeftShift) && entradasJogador.magnitude > 0;
+        // Agachar
+        bool agachando = Input.GetKey(KeyCode.LeftControl);
+        float targetHeight = agachando ? alturaAgachar : alturaOriginal;
+        Vector3 targetCenter = agachando ? centroAgachar : centroOriginal;
+
+        characterController.height = Mathf.Lerp(characterController.height, targetHeight, Time.deltaTime * suavizacaoAgachar);
+        characterController.center = Vector3.Lerp(characterController.center, targetCenter, Time.deltaTime * suavizacaoAgachar);
+
+        // Corrida
+        bool correndo = Input.GetKey(KeyCode.LeftShift) && entradasJogador.magnitude > 0 && !agachando;
+        float velocidadeAtual = velocidadeNormal;
+
         if (correndo && stamina > 0)
         {
-            velocidade = 7f; // velocidade corrida
+            velocidadeAtual = velocidadeCorrida;
             stamina -= gastoCorrida * Time.deltaTime;
             if (stamina < 0) stamina = 0;
-            tempoDesdeUltimaAcao = 0f; // reseta delay
         }
-        else
+        else if (agachando)
         {
-            velocidade = 4f; // velocidade normal
-            // delay para regenerar stamina
-            tempoDesdeUltimaAcao += Time.deltaTime;
-            if (tempoDesdeUltimaAcao >= delayRecuperacao && stamina < staminaMax)
+            velocidadeAtual = velocidadeAgachar;
+            if (stamina < staminaMax)
             {
                 stamina += recuperacaoStamina * Time.deltaTime;
                 if (stamina > staminaMax) stamina = staminaMax;
             }
+        }
+        else
+        {
+            velocidadeAtual = velocidadeNormal;
+            if (stamina < staminaMax)
+            {
+                stamina += recuperacaoStamina * Time.deltaTime;
+                if (stamina > staminaMax) stamina = staminaMax;
+            }
+        }
+
+        // Movimento final
+        Vector3 movimento = entradasJogador * velocidadeAtual * Time.deltaTime;
+        movimento.y = velocidadeVertical * Time.deltaTime;
+        CollisionFlags flags = characterController.Move(movimento);
+
+        // Resetar velocidade vertical ao tocar o chão
+        if ((flags & CollisionFlags.Below) != 0 && velocidadeVertical < 0)
+        {
+            velocidadeVertical = 0f;
+        }
+
+        // Atualizar HUD da stamina
+        if (sliderStamina != null)
+        {
+            sliderStamina.value = stamina / staminaMax;
         }
     }
 }
