@@ -1008,7 +1008,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1513615936}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cd7a01fa5beb51c4881f89062dc4494a, type: 3}
   m_Name: 
@@ -1018,6 +1018,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   alturaDoSalto: 1.5
+  custoPulo: 15
+  staminaMax: 100
+  gastoCorrida: 10
+  recuperacaoStamina: 10
+  delayRecuperacao: 2
 --- !u!114 &1513615945
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1025,7 +1030,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1513615936}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6042a69fa457df744b65a78989293e5c, type: 3}
   m_Name: 
