@@ -17,8 +17,10 @@ public class PlayerFootsteps : MonoBehaviour
     public Transform groundCheck;       // um empty sob os pés
     public float groundDistance = 0.3f; // raio da checagem
     public LayerMask groundMask;        // layer do chão
-
     private bool isGrounded;
+
+    [Header("Som detectável pelo inimigo")]
+    public BlindEnemy[] blindEnemies;   // todos os inimigos cegos na cena
 
     void Update()
     {
@@ -38,14 +40,17 @@ public class PlayerFootsteps : MonoBehaviour
             if (running)
             {
                 PlayOnly(footstepsRun);
+                AlertEnemies(); // emite som forte
             }
             else if (crouching)
             {
                 PlayOnly(footstepsCrouch);
+                AlertEnemies(0.5f); // som mais fraco
             }
             else
             {
                 PlayOnly(footstepsNormal);
+                AlertEnemies(); // som normal
             }
         }
         else
@@ -58,6 +63,8 @@ public class PlayerFootsteps : MonoBehaviour
         {
             if (jumpSound != null)
                 jumpSound.PlayOneShot(jumpSound.clip);
+
+            AlertEnemies(1.2f); // som mais alto pro pulo
         }
     }
 
@@ -84,5 +91,17 @@ public class PlayerFootsteps : MonoBehaviour
         if (footstepsNormal.isPlaying) footstepsNormal.Stop();
         if (footstepsRun.isPlaying) footstepsRun.Stop();
         if (footstepsCrouch.isPlaying) footstepsCrouch.Stop();
+    }
+
+    // 👂 Informa os inimigos cegos que o jogador fez barulho
+    void AlertEnemies(float volumeMultiplier = 1f)
+    {
+        if (blindEnemies == null || blindEnemies.Length == 0) return;
+
+        foreach (BlindEnemy enemy in blindEnemies)
+        {
+            if (enemy != null)
+                enemy.HearSound(transform.position, volumeMultiplier);
+        }
     }
 }

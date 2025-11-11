@@ -1340,10 +1340,15 @@ MonoBehaviour:
   footstepsNormal: {fileID: 1513615948}
   footstepsRun: {fileID: 1513615951}
   footstepsCrouch: {fileID: 1513615950}
-  jumpSound: {fileID: 0}
+  jumpSound: {fileID: 1513615949}
   runKey: 304
   crouchKey: 306
   jumpKey: 32
+  groundCheck: {fileID: 592194290}
+  groundDistance: 0.3
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!82 &1513615948
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1448,11 +1453,11 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1513615936}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 0}
+  m_Resource: {fileID: 8300000, guid: 2265a643f2d1e5841bbe6fc8ba984584, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1

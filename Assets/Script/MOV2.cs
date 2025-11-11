@@ -1,11 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class MOV2 : MonoBehaviour
 {
     private Vector3 entradasJogador;
     private CharacterController characterController;
-    private Transform myCamera;
     private bool estaNoChao;
     private float velocidadeVertical;
 
@@ -19,14 +18,16 @@ public class MOV2 : MonoBehaviour
     public float gravidade = -20f;
     public float gastoPulo = 15f;
 
-    [Header("Agachar")]
-    public float alturaAgachar = 1f;
-    private float alturaOriginal;
-    private Vector3 centroOriginal;
-    private Vector3 centroAgachar;
+    [Header("Cabeça / Câmera")]
+    [Tooltip("Arraste aqui o Transform da câmera (ou da cabeça)")]
+    public Transform headCamera;
+    [Tooltip("Quanto a cabeça desce ao agachar")]
+    public float alturaHead = 0.5f;
     public float suavizacaoAgachar = 5f;
+    private Vector3 posCameraOriginal;
+    private Vector3 posCameraAgachar;
 
-    [Header("Ch�o")]
+    [Header("Chão")]
     [SerializeField] private Transform veficadorChao;
     [SerializeField] private LayerMask cenarioMask;
     [SerializeField] private float raioChao = 0.3f;
@@ -38,35 +39,46 @@ public class MOV2 : MonoBehaviour
     public float recuperacaoStamina = 15f;
     public float delayRecuperacao = 1f;
     private float timerRecuperacao = 0f;
-    public Image staminaImage; // Image Filled
-    public float tempoSumir = 2f; // tempo para barra sumir ap�s n�o usar
+    public Image staminaImage;
+    public float tempoSumir = 2f;
     private float timerSumir = 0f;
 
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
-        myCamera = Camera.main.transform;
 
-        alturaOriginal = characterController.height;
-        centroOriginal = characterController.center;
-        centroAgachar = new Vector3(centroOriginal.x, alturaAgachar / 2f, centroOriginal.z);
+        // caso o jogador esqueça de atribuir, tenta achar automaticamente
+        if (headCamera == null)
+        {
+            if (Camera.main != null)
+                headCamera = Camera.main.transform;
+            else
+                Debug.LogWarning("⚠️ Nenhuma câmera atribuída em 'headCamera' no inspector!");
+        }
+
+        if (headCamera != null)
+        {
+            posCameraOriginal = headCamera.localPosition;
+            posCameraAgachar = posCameraOriginal + new Vector3(0, -alturaHead, 0);
+        }
 
         stamina = staminaMax;
-
         if (staminaImage != null)
-            staminaImage.gameObject.SetActive(false); // come�a escondida
+            staminaImage.gameObject.SetActive(false);
     }
 
     void Update()
     {
-        // Rota��o da c�mera
-        transform.eulerAngles = new Vector3(0, myCamera.eulerAngles.y, 0);
+        if (headCamera == null) return; // segurança
 
-        // Movimento horizontal
+        // Rotação da câmera segue a rotação do player
+        transform.eulerAngles = new Vector3(0, headCamera.eulerAngles.y, 0);
+
+        // Movimento
         entradasJogador = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
         entradasJogador = transform.TransformDirection(entradasJogador);
 
-        // Verifica��o do ch�o
+        // Verificar chão
         estaNoChao = Physics.CheckSphere(veficadorChao.position, raioChao, cenarioMask);
 
         bool gastandoStamina = false;
@@ -80,16 +92,13 @@ public class MOV2 : MonoBehaviour
             gastandoStamina = true;
         }
 
-        // Aplicar gravidade
+        // Gravidade
         velocidadeVertical += gravidade * Time.deltaTime;
 
-        // Agachar
+        // Agachar (só a cabeça)
         bool agachando = Input.GetKey(KeyCode.LeftControl);
-        float targetHeight = agachando ? alturaAgachar : alturaOriginal;
-        Vector3 targetCenter = agachando ? centroAgachar : centroOriginal;
-
-        characterController.height = Mathf.Lerp(characterController.height, targetHeight, Time.deltaTime * suavizacaoAgachar);
-        characterController.center = Vector3.Lerp(characterController.center, targetCenter, Time.deltaTime * suavizacaoAgachar);
+        Vector3 alvoCamera = agachando ? posCameraAgachar : posCameraOriginal;
+        headCamera.localPosition = Vector3.Lerp(headCamera.localPosition, alvoCamera, Time.deltaTime * suavizacaoAgachar);
 
         // Corrida
         bool correndo = Input.GetKey(KeyCode.LeftShift) && entradasJogador.magnitude > 0 && !agachando && stamina > 0;
@@ -106,16 +115,13 @@ public class MOV2 : MonoBehaviour
         {
             velocidadeAtual = agachando ? velocidadeAgachar : velocidadeNormal;
 
-            // Delay para recuperar stamina
             if (timerRecuperacao >= delayRecuperacao)
                 stamina += recuperacaoStamina * Time.deltaTime;
             else
                 timerRecuperacao += Time.deltaTime;
         }
 
-        // Limitar stamina
-        if (stamina > staminaMax) stamina = staminaMax;
-        if (stamina < 0) stamina = 0;
+        stamina = Mathf.Clamp(stamina, 0, staminaMax);
 
         // Movimento final
         Vector3 movimento = entradasJogador * velocidadeAtual * Time.deltaTime;
@@ -134,7 +140,7 @@ public class MOV2 : MonoBehaviour
             if (gastandoStamina)
             {
                 staminaImage.gameObject.SetActive(true);
-                timerSumir = 0f; // reinicia timer para sumir
+                timerSumir = 0f;
             }
             else
             {
@@ -145,9 +151,7 @@ public class MOV2 : MonoBehaviour
                         staminaImage.gameObject.SetActive(false);
                 }
                 else
-                {
                     staminaImage.gameObject.SetActive(true);
-                }
             }
         }
     }
