@@ -5,14 +5,16 @@ public class BlindEnemy : MonoBehaviour
 {
     [Header("Configuração")]
     public NavMeshAgent agent;
-    public float baseHearingRange = 15f;
-    public float runSpeed = 5f;
-    public float walkSpeed = 2f;
-    public float cooldown = 1f;
+    public float baseHearingRange = 15f; // alcance de audição base
+    public float runSpeed = 5f;          // velocidade ao perseguir
+    public float walkSpeed = 2f;         // velocidade normal
+    public float cooldown = 1f;          // tempo entre ouvir sons
+    public float forgetTime = 5f;        // tempo pra esquecer o som
 
     private Vector3 lastHeardPos;
     private bool chasing = false;
     private float cooldownTimer = 0f;
+    private float timeSinceHeard = 0f;
 
     // 🔍 debug
     private bool heardSomething = false;
@@ -26,22 +28,36 @@ public class BlindEnemy : MonoBehaviour
 
         if (chasing)
         {
+            timeSinceHeard += Time.deltaTime;
+
+            // 🏃‍♂️ Corre enquanto estiver perseguindo
             agent.speed = runSpeed;
             agent.SetDestination(lastHeardPos);
 
             if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
             {
+                // Chegou onde ouviu o som
                 chasing = false;
                 cooldownTimer = cooldown;
-                Debug.Log($"{name} chegou na posição do som.");
+                Debug.Log($"{name} chegou na posição do som e parou de correr.");
+            }
+
+            // ❌ Para de seguir se ficar muito tempo sem ouvir algo novo
+            if (timeSinceHeard >= forgetTime)
+            {
+                chasing = false;
+                heardSomething = false;
+                Debug.Log($"{name} esqueceu o som e voltou ao normal.");
             }
         }
         else
         {
+            // 🚶‍♂️ Anda devagar normalmente
             agent.speed = walkSpeed;
         }
     }
 
+    // 🔊 Método chamado quando o jogador faz barulho
     public void HearSound(Vector3 soundPos, float volumeMultiplier)
     {
         if (cooldownTimer > 0) return;
@@ -49,7 +65,7 @@ public class BlindEnemy : MonoBehaviour
         float distance = Vector3.Distance(transform.position, soundPos);
         float effectiveRange = baseHearingRange * volumeMultiplier;
 
-        // Salva pra debug visual
+        // guarda pro debug
         lastHeardDistance = distance;
         lastEffectiveRange = effectiveRange;
 
@@ -58,7 +74,9 @@ public class BlindEnemy : MonoBehaviour
             lastHeardPos = soundPos;
             chasing = true;
             heardSomething = true;
-            Debug.Log($"{name} ouviu som a {distance:F1}m (alcance {effectiveRange:F1}m). Indo investigar!");
+            timeSinceHeard = 0f;
+
+            Debug.Log($"{name} ouviu som a {distance:F1}m (alcance {effectiveRange:F1}m). CORRENDO até o som!");
         }
         else
         {
@@ -67,14 +85,12 @@ public class BlindEnemy : MonoBehaviour
         }
     }
 
-    // 🎯 Mostra o alcance auditivo na Scene
+    // 🎯 Gizmos (debug visual na cena)
     private void OnDrawGizmosSelected()
     {
-        // Circulo do alcance de audição
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, baseHearingRange);
 
-        // Mostra posição do som ouvido
         if (heardSomething)
         {
             Gizmos.color = Color.red;
@@ -82,7 +98,6 @@ public class BlindEnemy : MonoBehaviour
             Gizmos.DrawLine(transform.position, lastHeardPos);
         }
 
-        // Mostra o alcance efetivo da última vez que ouviu
         if (lastEffectiveRange > 0)
         {
             Gizmos.color = new Color(1f, 0.5f, 0f, 0.3f);
