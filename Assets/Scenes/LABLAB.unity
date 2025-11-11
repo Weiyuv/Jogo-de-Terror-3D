@@ -1326,10 +1326,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MOV2
   velocidadeNormal: 4
   velocidadeAgachar: 2
-  velocidadeCorrida: 7
+  velocidadeCorrida: 15
   alturaDoSalto: 1.5
   gravidade: -20
-  gastoPulo: 15
+  gastoPulo: 10
   alturaAgachar: 1
   suavizacaoAgachar: 5
   veficadorChao: {fileID: 592194290}
@@ -1338,9 +1338,11 @@ MonoBehaviour:
     m_Bits: 64
   raioChao: 0.3
   staminaMax: 100
-  gastoCorrida: 10
+  gastoCorrida: 5
   recuperacaoStamina: 15
+  delayRecuperacao: 2
   staminaImage: {fileID: 1056400208}
+  tempoSumir: 2
 --- !u!1 &2003764348
 GameObject:
   m_ObjectHideFlags: 0

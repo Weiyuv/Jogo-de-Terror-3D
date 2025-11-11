@@ -17,7 +17,7 @@ public class MOV2 : MonoBehaviour
     [Header("Pulo")]
     public float alturaDoSalto = 1.5f;
     public float gravidade = -20f;
-    public float gastoPulo = 15f; // stamina gasta ao pular
+    public float gastoPulo = 15f;
 
     [Header("Agachar")]
     public float alturaAgachar = 1f;
@@ -36,7 +36,11 @@ public class MOV2 : MonoBehaviour
     private float stamina;
     public float gastoCorrida = 20f;
     public float recuperacaoStamina = 15f;
+    public float delayRecuperacao = 1f;
+    private float timerRecuperacao = 0f;
     public Image staminaImage; // Image Filled
+    public float tempoSumir = 2f; // tempo para barra sumir após não usar
+    private float timerSumir = 0f;
 
     private void Awake()
     {
@@ -48,11 +52,14 @@ public class MOV2 : MonoBehaviour
         centroAgachar = new Vector3(centroOriginal.x, alturaAgachar / 2f, centroOriginal.z);
 
         stamina = staminaMax;
+
+        if (staminaImage != null)
+            staminaImage.gameObject.SetActive(false); // começa escondida
     }
 
     void Update()
     {
-        // Rotação de acordo com a câmera
+        // Rotação da câmera
         transform.eulerAngles = new Vector3(0, myCamera.eulerAngles.y, 0);
 
         // Movimento horizontal
@@ -62,11 +69,15 @@ public class MOV2 : MonoBehaviour
         // Verificação do chão
         estaNoChao = Physics.CheckSphere(veficadorChao.position, raioChao, cenarioMask);
 
+        bool gastandoStamina = false;
+
         // Pulo
         if (Input.GetKeyDown(KeyCode.Space) && estaNoChao && stamina >= gastoPulo)
         {
             velocidadeVertical = Mathf.Sqrt(alturaDoSalto * -2f * gravidade);
             stamina -= gastoPulo;
+            timerRecuperacao = 0f;
+            gastandoStamina = true;
         }
 
         // Aplicar gravidade
@@ -88,16 +99,18 @@ public class MOV2 : MonoBehaviour
         {
             velocidadeAtual = velocidadeCorrida;
             stamina -= gastoCorrida * Time.deltaTime;
-        }
-        else if (agachando)
-        {
-            velocidadeAtual = velocidadeAgachar;
-            stamina += recuperacaoStamina * Time.deltaTime;
+            timerRecuperacao = 0f;
+            gastandoStamina = true;
         }
         else
         {
-            velocidadeAtual = velocidadeNormal;
-            stamina += recuperacaoStamina * Time.deltaTime;
+            velocidadeAtual = agachando ? velocidadeAgachar : velocidadeNormal;
+
+            // Delay para recuperar stamina
+            if (timerRecuperacao >= delayRecuperacao)
+                stamina += recuperacaoStamina * Time.deltaTime;
+            else
+                timerRecuperacao += Time.deltaTime;
         }
 
         // Limitar stamina
@@ -109,18 +122,33 @@ public class MOV2 : MonoBehaviour
         movimento.y = velocidadeVertical * Time.deltaTime;
         CollisionFlags flags = characterController.Move(movimento);
 
-        // Resetar velocidade vertical ao tocar o chão
         if ((flags & CollisionFlags.Below) != 0 && velocidadeVertical < 0)
-        {
             velocidadeVertical = 0f;
-        }
 
         // Atualizar barra de stamina
         if (staminaImage != null)
         {
             staminaImage.fillAmount = stamina / staminaMax;
-            // Cor opcional: verde cheio, vermelho baixo
             staminaImage.color = Color.Lerp(Color.red, Color.green, stamina / staminaMax);
+
+            if (gastandoStamina)
+            {
+                staminaImage.gameObject.SetActive(true);
+                timerSumir = 0f; // reinicia timer para sumir
+            }
+            else
+            {
+                if (stamina >= staminaMax)
+                {
+                    timerSumir += Time.deltaTime;
+                    if (timerSumir >= tempoSumir)
+                        staminaImage.gameObject.SetActive(false);
+                }
+                else
+                {
+                    staminaImage.gameObject.SetActive(true);
+                }
+            }
         }
     }
 }
