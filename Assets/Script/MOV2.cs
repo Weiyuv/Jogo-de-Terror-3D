@@ -7,6 +7,7 @@ public class MOV2 : MonoBehaviour
     private CharacterController characterController;
     private Transform myCamera;
     private bool estaNoChao;
+    private float velocidadeVertical;
 
     [Header("Movimento")]
     public float velocidadeNormal = 4f;
@@ -16,7 +17,7 @@ public class MOV2 : MonoBehaviour
     [Header("Pulo")]
     public float alturaDoSalto = 1.5f;
     public float gravidade = -20f;
-    private float velocidadeVertical;
+    public float gastoPulo = 15f; // stamina gasta ao pular
 
     [Header("Agachar")]
     public float alturaAgachar = 1f;
@@ -35,7 +36,7 @@ public class MOV2 : MonoBehaviour
     private float stamina;
     public float gastoCorrida = 20f;
     public float recuperacaoStamina = 15f;
-    public Slider sliderStamina;
+    public Image staminaImage; // Image Filled
 
     private void Awake()
     {
@@ -58,13 +59,14 @@ public class MOV2 : MonoBehaviour
         entradasJogador = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
         entradasJogador = transform.TransformDirection(entradasJogador);
 
-        // Verificação do chão usando veficadorChao
+        // Verificação do chão
         estaNoChao = Physics.CheckSphere(veficadorChao.position, raioChao, cenarioMask);
 
         // Pulo
-        if (Input.GetKeyDown(KeyCode.Space) && estaNoChao)
+        if (Input.GetKeyDown(KeyCode.Space) && estaNoChao && stamina >= gastoPulo)
         {
             velocidadeVertical = Mathf.Sqrt(alturaDoSalto * -2f * gravidade);
+            stamina -= gastoPulo;
         }
 
         // Aplicar gravidade
@@ -79,33 +81,28 @@ public class MOV2 : MonoBehaviour
         characterController.center = Vector3.Lerp(characterController.center, targetCenter, Time.deltaTime * suavizacaoAgachar);
 
         // Corrida
-        bool correndo = Input.GetKey(KeyCode.LeftShift) && entradasJogador.magnitude > 0 && !agachando;
+        bool correndo = Input.GetKey(KeyCode.LeftShift) && entradasJogador.magnitude > 0 && !agachando && stamina > 0;
         float velocidadeAtual = velocidadeNormal;
 
-        if (correndo && stamina > 0)
+        if (correndo)
         {
             velocidadeAtual = velocidadeCorrida;
             stamina -= gastoCorrida * Time.deltaTime;
-            if (stamina < 0) stamina = 0;
         }
         else if (agachando)
         {
             velocidadeAtual = velocidadeAgachar;
-            if (stamina < staminaMax)
-            {
-                stamina += recuperacaoStamina * Time.deltaTime;
-                if (stamina > staminaMax) stamina = staminaMax;
-            }
+            stamina += recuperacaoStamina * Time.deltaTime;
         }
         else
         {
             velocidadeAtual = velocidadeNormal;
-            if (stamina < staminaMax)
-            {
-                stamina += recuperacaoStamina * Time.deltaTime;
-                if (stamina > staminaMax) stamina = staminaMax;
-            }
+            stamina += recuperacaoStamina * Time.deltaTime;
         }
+
+        // Limitar stamina
+        if (stamina > staminaMax) stamina = staminaMax;
+        if (stamina < 0) stamina = 0;
 
         // Movimento final
         Vector3 movimento = entradasJogador * velocidadeAtual * Time.deltaTime;
@@ -118,10 +115,12 @@ public class MOV2 : MonoBehaviour
             velocidadeVertical = 0f;
         }
 
-        // Atualizar HUD da stamina
-        if (sliderStamina != null)
+        // Atualizar barra de stamina
+        if (staminaImage != null)
         {
-            sliderStamina.value = stamina / staminaMax;
+            staminaImage.fillAmount = stamina / staminaMax;
+            // Cor opcional: verde cheio, vermelho baixo
+            staminaImage.color = Color.Lerp(Color.red, Color.green, stamina / staminaMax);
         }
     }
 }
