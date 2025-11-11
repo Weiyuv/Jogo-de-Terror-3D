@@ -13,8 +13,18 @@ public class PlayerFootsteps : MonoBehaviour
     public KeyCode crouchKey = KeyCode.LeftControl;
     public KeyCode jumpKey = KeyCode.Space;
 
+    [Header("Detecção de chão")]
+    public Transform groundCheck;       // um empty sob os pés
+    public float groundDistance = 0.3f; // raio da checagem
+    public LayerMask groundMask;        // layer do chão
+
+    private bool isGrounded;
+
     void Update()
     {
+        // --- Checa se está no chão ---
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+
         // Movimento
         bool moving = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A)
                     || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D);
@@ -23,7 +33,7 @@ public class PlayerFootsteps : MonoBehaviour
         bool crouching = Input.GetKey(crouchKey);
 
         // --- Lógica de passos ---
-        if (moving)
+        if (moving && isGrounded)
         {
             if (running)
             {
@@ -44,7 +54,7 @@ public class PlayerFootsteps : MonoBehaviour
         }
 
         // --- Som de pulo ---
-        if (Input.GetKeyDown(jumpKey))
+        if (Input.GetKeyDown(jumpKey) && isGrounded)
         {
             if (jumpSound != null)
                 jumpSound.PlayOneShot(jumpSound.clip);
