@@ -5,11 +5,11 @@ public class BlindEnemy : MonoBehaviour
 {
     [Header("Configuração")]
     public NavMeshAgent agent;
-    public float baseHearingRange = 15f; // alcance de audição base
-    public float runSpeed = 5f;          // velocidade ao perseguir
-    public float walkSpeed = 2f;         // velocidade normal
-    public float cooldown = 1f;          // tempo entre ouvir sons
-    public float forgetTime = 5f;        // tempo pra esquecer o som
+    public float baseHearingRange = 15f;   // alcance de audição base
+    public float runSpeed = 5f;            // velocidade ao perseguir
+    public float walkSpeed = 2f;           // velocidade normal
+    public float cooldown = 1f;            // tempo entre ouvir sons
+    public float forgetTime = 5f;          // tempo pra esquecer o som
 
     private Vector3 lastHeardPos;
     private bool chasing = false;
@@ -21,6 +21,22 @@ public class BlindEnemy : MonoBehaviour
     private float lastHeardDistance = 0f;
     private float lastEffectiveRange = 0f;
 
+    // -------------------------------
+    // ACESSO PÚBLICO PARA HidingPlace
+    // -------------------------------
+    public bool Chasing => chasing; // propriedade pública para saber se está perseguindo
+
+    public void StopChase()
+    {
+        chasing = false;
+        heardSomething = false;
+        cooldownTimer = cooldown;
+        Debug.Log($"{name} teve a perseguição interrompida pelo HidingPlace.");
+    }
+
+    // -------------------------------
+    // SISTEMA ORIGINAL
+    // -------------------------------
     void Update()
     {
         if (cooldownTimer > 0)
@@ -30,19 +46,17 @@ public class BlindEnemy : MonoBehaviour
         {
             timeSinceHeard += Time.deltaTime;
 
-            // 🏃‍♂️ Corre enquanto estiver perseguindo
+            // Corre enquanto estiver perseguindo
             agent.speed = runSpeed;
             agent.SetDestination(lastHeardPos);
 
             if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
             {
-                // Chegou onde ouviu o som
                 chasing = false;
                 cooldownTimer = cooldown;
                 Debug.Log($"{name} chegou na posição do som e parou de correr.");
             }
 
-            // ❌ Para de seguir se ficar muito tempo sem ouvir algo novo
             if (timeSinceHeard >= forgetTime)
             {
                 chasing = false;
@@ -52,12 +66,10 @@ public class BlindEnemy : MonoBehaviour
         }
         else
         {
-            // 🚶‍♂️ Anda devagar normalmente
             agent.speed = walkSpeed;
         }
     }
 
-    // 🔊 Método chamado quando o jogador faz barulho
     public void HearSound(Vector3 soundPos, float volumeMultiplier)
     {
         if (cooldownTimer > 0) return;
@@ -65,7 +77,6 @@ public class BlindEnemy : MonoBehaviour
         float distance = Vector3.Distance(transform.position, soundPos);
         float effectiveRange = baseHearingRange * volumeMultiplier;
 
-        // guarda pro debug
         lastHeardDistance = distance;
         lastEffectiveRange = effectiveRange;
 
@@ -85,7 +96,6 @@ public class BlindEnemy : MonoBehaviour
         }
     }
 
-    // 🎯 Gizmos (debug visual na cena)
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
