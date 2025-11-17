@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class HidingPlace : MonoBehaviour
 {
     [Header("UI")]
     public GameObject hideText; // texto "Press E to hide"
+    public GameObject exitText; // texto "Press E to exit"
 
     [Header("Player")]
     public GameObject player;
@@ -41,15 +43,18 @@ public class HidingPlace : MonoBehaviour
 
         if (hideText != null)
             hideText.SetActive(false);
+        if (exitText != null)
+            exitText.SetActive(false);
     }
 
     private void OnTriggerStay(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            if (hideText != null)
-                hideText.SetActive(true);
             interactable = true;
+
+            if (!hiding && hideText != null)
+                hideText.SetActive(true);
         }
     }
 
@@ -57,9 +62,12 @@ public class HidingPlace : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            interactable = false;
+
             if (hideText != null)
                 hideText.SetActive(false);
-            interactable = false;
+            if (exitText != null)
+                exitText.SetActive(false);
 
             if (hiding)
                 SetHiding(false);
@@ -72,9 +80,6 @@ public class HidingPlace : MonoBehaviour
         {
             hiding = !hiding;
             SetHiding(hiding);
-
-            if (hideText != null)
-                hideText.SetActive(false);
         }
 
         // Move a câmera suavemente para o Empty do esconderijo ou posição original
@@ -97,8 +102,19 @@ public class HidingPlace : MonoBehaviour
         foreach (Renderer r in playerRenderers)
             r.enabled = !hide;
 
-        // Se saiu do esconderijo, volta player para posição original
-        if (!hide)
+        // Exibe o texto correto
+        if (hide)
+        {
+            if (hideText != null) hideText.SetActive(false);
+            if (exitText != null) exitText.SetActive(true);
+        }
+        else
+        {
+            if (hideText != null) hideText.SetActive(true);
+            if (exitText != null) exitText.SetActive(false);
+
+            // Volta player para posição original
             player.transform.position = originalPlayerPos;
+        }
     }
 }
