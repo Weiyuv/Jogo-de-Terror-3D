@@ -5,15 +5,19 @@ public class BlindEnemy : MonoBehaviour
 {
     [Header("Configuração")]
     public NavMeshAgent agent;
-    public float baseHearingRange = 15f;   // alcance de audição base
-    public float runSpeed = 5f;            // velocidade ao perseguir
-    public float walkSpeed = 2f;           // velocidade patrulhando
-    public float cooldown = 1f;            // tempo entre ouvir sons
-    public float forgetTime = 5f;          // tempo pra esquecer o som
+    public float baseHearingRange = 15f;
+    public float runSpeed = 5f;
+    public float walkSpeed = 2f;
+    public float cooldown = 1f;
+    public float forgetTime = 5f;
 
     [Header("Patrulha")]
-    public Transform[] patrolPoints;       // pontos de patrulha
+    public Transform[] patrolPoints;
     private int currentPatrolIndex = 0;
+
+    [Header("Animação")]
+    public Animator animator; // Referência ao Animator
+    private const string SpeedParam = "Speed"; // Nome do parâmetro float no Animator
 
     private Vector3 lastHeardPos;
     private bool chasing = false;
@@ -25,7 +29,6 @@ public class BlindEnemy : MonoBehaviour
     private float lastHeardDistance = 0f;
     private float lastEffectiveRange = 0f;
 
-    // acesso público para HidingPlace
     public bool Chasing => chasing;
 
     public void StopChase()
@@ -38,7 +41,6 @@ public class BlindEnemy : MonoBehaviour
 
     void Start()
     {
-        // Começa patrulhando no primeiro ponto, se houver
         if (patrolPoints.Length > 0 && agent != null)
         {
             agent.SetDestination(patrolPoints[currentPatrolIndex].position);
@@ -51,6 +53,9 @@ public class BlindEnemy : MonoBehaviour
         if (cooldownTimer > 0)
             cooldownTimer -= Time.deltaTime;
 
+        // Atualiza animação com base na velocidade
+        UpdateAnimation();
+
         if (chasing)
         {
             // Perseguir o som
@@ -58,7 +63,7 @@ public class BlindEnemy : MonoBehaviour
             agent.speed = runSpeed;
             agent.SetDestination(lastHeardPos);
 
-            // Chegou ao destino do som
+            // Chegou ao destino
             if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
             {
                 chasing = false;
@@ -83,7 +88,6 @@ public class BlindEnemy : MonoBehaviour
 
                 if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
                 {
-                    // Próximo ponto da patrulha
                     currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
                     agent.SetDestination(patrolPoints[currentPatrolIndex].position);
                 }
@@ -91,15 +95,26 @@ public class BlindEnemy : MonoBehaviour
         }
     }
 
+    private void UpdateAnimation()
+    {
+        if (animator == null || agent == null) return;
+
+        float targetSpeed = 0f;
+
+        if (chasing)
+            targetSpeed = 1f; // Correndo
+        else if (agent.velocity.magnitude > 0.1f)
+            targetSpeed = 0.5f; // Andando
+        else
+            targetSpeed = 0f; // Idle
+
+        animator.SetFloat(SpeedParam, targetSpeed);
+    }
+
     public void HearSound(Vector3 soundPos, float volumeMultiplier)
     {
         if (cooldownTimer > 0) return;
-
-        if (volumeMultiplier <= 0f)
-        {
-            // Não detecta sons com volume 0
-            return;
-        }
+        if (volumeMultiplier <= 0f) return;
 
         float distance = Vector3.Distance(transform.position, soundPos);
         float effectiveRange = baseHearingRange * volumeMultiplier;
@@ -113,7 +128,6 @@ public class BlindEnemy : MonoBehaviour
             chasing = true;
             heardSomething = true;
             timeSinceHeard = 0f;
-
             Debug.Log($"{name} ouviu som a {distance:F1}m (alcance {effectiveRange:F1}m). CORRENDO até o som!");
         }
         else
@@ -141,7 +155,6 @@ public class BlindEnemy : MonoBehaviour
             Gizmos.DrawWireSphere(transform.position, lastEffectiveRange);
         }
 
-        // Desenha pontos de patrulha
         if (patrolPoints != null && patrolPoints.Length > 0)
         {
             Gizmos.color = Color.green;
