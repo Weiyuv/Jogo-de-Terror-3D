@@ -22,12 +22,15 @@ public class som : MonoBehaviour
     [Header("Som detectável pelo inimigo")]
     public BlindEnemy[] blindEnemies;
 
+    [Header("Configuração de som")]
+    [Range(0f, 5f)]
+    public float soundRangeMultiplier = 1f; // controla alcance de detecção dos inimigos
+
     void Update()
     {
-        // 🔍 Garante que sempre tenha inimigos referenciados
+        // 🔍 Corrigido para remover aviso de obsolescência
         if (blindEnemies == null || blindEnemies.Length == 0)
-            blindEnemies = FindObjectsByType<BlindEnemy>(FindObjectsSortMode.None);
-
+            blindEnemies = Object.FindObjectsByType<BlindEnemy>(FindObjectsSortMode.None);
 
         // --- Checa se está no chão ---
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
@@ -45,17 +48,17 @@ public class som : MonoBehaviour
             if (running)
             {
                 PlayOnly(footstepsRun);
-                AlertEnemies(1.5f); // som mais alto ao correr
+                AlertEnemies(1.5f * soundRangeMultiplier); // mais alto ao correr
             }
             else if (crouching)
             {
                 PlayOnly(footstepsCrouch);
-                AlertEnemies(0.5f); // som mais fraco ao agachar
+                AlertEnemies(0f); // agachado: som toca, mas inimigos não detectam
             }
             else
             {
                 PlayOnly(footstepsNormal);
-                AlertEnemies(1f); // som normal
+                AlertEnemies(1f * soundRangeMultiplier); // som normal
             }
         }
         else
@@ -69,7 +72,7 @@ public class som : MonoBehaviour
             if (jumpSound != null)
                 jumpSound.PlayOneShot(jumpSound.clip);
 
-            AlertEnemies(1.2f);
+            AlertEnemies(1.2f * soundRangeMultiplier); // pulando alerta inimigos
         }
     }
 

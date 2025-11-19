@@ -7,24 +7,26 @@ public class BlindEnemy : MonoBehaviour
     public NavMeshAgent agent;
     public float baseHearingRange = 15f;   // alcance de audição base
     public float runSpeed = 5f;            // velocidade ao perseguir
-    public float walkSpeed = 2f;           // velocidade normal
+    public float walkSpeed = 2f;           // velocidade patrulhando
     public float cooldown = 1f;            // tempo entre ouvir sons
     public float forgetTime = 5f;          // tempo pra esquecer o som
+
+    [Header("Patrulha")]
+    public Transform[] patrolPoints;       // pontos de patrulha
+    private int currentPatrolIndex = 0;
 
     private Vector3 lastHeardPos;
     private bool chasing = false;
     private float cooldownTimer = 0f;
     private float timeSinceHeard = 0f;
 
-    // 🔍 debug
+    // debug
     private bool heardSomething = false;
     private float lastHeardDistance = 0f;
     private float lastEffectiveRange = 0f;
 
-    // -------------------------------
-    // ACESSO PÚBLICO PARA HidingPlace
-    // -------------------------------
-    public bool Chasing => chasing; // propriedade pública para saber se está perseguindo
+    // acesso público para HidingPlace
+    public bool Chasing => chasing;
 
     public void StopChase()
     {
@@ -34,22 +36,29 @@ public class BlindEnemy : MonoBehaviour
         Debug.Log($"{name} teve a perseguição interrompida pelo HidingPlace.");
     }
 
-    // -------------------------------
-    // SISTEMA ORIGINAL
-    // -------------------------------
+    void Start()
+    {
+        // Começa patrulhando no primeiro ponto, se houver
+        if (patrolPoints.Length > 0 && agent != null)
+        {
+            agent.SetDestination(patrolPoints[currentPatrolIndex].position);
+        }
+    }
+
     void Update()
     {
+        // cooldown para ouvir sons
         if (cooldownTimer > 0)
             cooldownTimer -= Time.deltaTime;
 
         if (chasing)
         {
+            // Perseguir o som
             timeSinceHeard += Time.deltaTime;
-
-            // Corre enquanto estiver perseguindo
             agent.speed = runSpeed;
             agent.SetDestination(lastHeardPos);
 
+            // Chegou ao destino do som
             if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
             {
                 chasing = false;
@@ -57,6 +66,7 @@ public class BlindEnemy : MonoBehaviour
                 Debug.Log($"{name} chegou na posição do som e parou de correr.");
             }
 
+            // Esqueceu o som
             if (timeSinceHeard >= forgetTime)
             {
                 chasing = false;
@@ -66,13 +76,30 @@ public class BlindEnemy : MonoBehaviour
         }
         else
         {
-            agent.speed = walkSpeed;
+            // Patrulha
+            if (patrolPoints.Length > 0 && agent != null)
+            {
+                agent.speed = walkSpeed;
+
+                if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
+                {
+                    // Próximo ponto da patrulha
+                    currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
+                    agent.SetDestination(patrolPoints[currentPatrolIndex].position);
+                }
+            }
         }
     }
 
     public void HearSound(Vector3 soundPos, float volumeMultiplier)
     {
         if (cooldownTimer > 0) return;
+
+        if (volumeMultiplier <= 0f)
+        {
+            // Não detecta sons com volume 0
+            return;
+        }
 
         float distance = Vector3.Distance(transform.position, soundPos);
         float effectiveRange = baseHearingRange * volumeMultiplier;
@@ -112,6 +139,17 @@ public class BlindEnemy : MonoBehaviour
         {
             Gizmos.color = new Color(1f, 0.5f, 0f, 0.3f);
             Gizmos.DrawWireSphere(transform.position, lastEffectiveRange);
+        }
+
+        // Desenha pontos de patrulha
+        if (patrolPoints != null && patrolPoints.Length > 0)
+        {
+            Gizmos.color = Color.green;
+            foreach (Transform p in patrolPoints)
+            {
+                if (p != null)
+                    Gizmos.DrawSphere(p.position, 0.2f);
+            }
         }
     }
 }

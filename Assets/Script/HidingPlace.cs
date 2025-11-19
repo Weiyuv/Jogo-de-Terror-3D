@@ -4,16 +4,16 @@ using UnityEngine.UI;
 public class HidingPlace : MonoBehaviour
 {
     [Header("UI")]
-    public GameObject hideText; // texto "Press E to hide"
-    public GameObject exitText; // texto "Press E to exit"
+    public GameObject hideText;
+    public GameObject exitText;
 
     [Header("Player")]
     public GameObject player;
-    public Transform cameraTransform; // câmera do player
+    public Transform cameraTransform;
 
     [Header("Esconderijo")]
-    public Transform hideCameraTransform; // posição da câmera dentro deste esconderijo
-    public Transform hidePlayerTransform; // posição do player dentro do esconderijo
+    public Transform hideCameraTransform;
+    public Transform hidePlayerTransform;
     public float cameraMoveSpeed = 5f;
 
     private Renderer[] playerRenderers;
@@ -22,6 +22,9 @@ public class HidingPlace : MonoBehaviour
     private bool hiding = false;
     private Vector3 originalCameraLocalPos;
     private Vector3 originalPlayerPos;
+
+    // 👇 ADICIONADO — script de movimento
+    private MOV3 move;
 
     private void Start()
     {
@@ -32,6 +35,9 @@ public class HidingPlace : MonoBehaviour
         }
 
         playerRenderers = player.GetComponentsInChildren<Renderer>();
+
+        // 👇 PEGA O SEU SCRIPT DE MOVIMENTO
+        move = player.GetComponent<MOV3>();
 
         if (cameraTransform == null)
             cameraTransform = Camera.main.transform;
@@ -82,14 +88,12 @@ public class HidingPlace : MonoBehaviour
             SetHiding(hiding);
         }
 
-        // Move a câmera suavemente para o Empty do esconderijo ou posição original
         if (cameraTransform != null)
         {
             Vector3 targetPos = hiding ? hideCameraTransform.localPosition : originalCameraLocalPos;
             cameraTransform.localPosition = Vector3.Lerp(cameraTransform.localPosition, targetPos, Time.deltaTime * cameraMoveSpeed);
         }
 
-        // Teleporta player constantemente para o Empty se estiver escondido
         if (hiding && hidePlayerTransform != null)
         {
             player.transform.position = hidePlayerTransform.position;
@@ -98,11 +102,13 @@ public class HidingPlace : MonoBehaviour
 
     private void SetHiding(bool hide)
     {
-        // Alterna visibilidade do player
         foreach (Renderer r in playerRenderers)
             r.enabled = !hide;
 
-        // Exibe o texto correto
+        // 👇 ATIVA/DESATIVA MOVIMENTO DO PLAYER
+        if (move != null)
+            move.enabled = !hide;
+
         if (hide)
         {
             if (hideText != null) hideText.SetActive(false);
@@ -113,7 +119,6 @@ public class HidingPlace : MonoBehaviour
             if (hideText != null) hideText.SetActive(true);
             if (exitText != null) exitText.SetActive(false);
 
-            // Volta player para posição original
             player.transform.position = originalPlayerPos;
         }
     }
