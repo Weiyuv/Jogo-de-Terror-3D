@@ -16,15 +16,19 @@ public class BlindEnemy : MonoBehaviour
     private int currentPatrolIndex = 0;
 
     [Header("Animação")]
-    public Animator animator; // Referência ao Animator
-    private const string SpeedParam = "Speed"; // Nome do parâmetro float no Animator
+    public Animator animator;
+    private const string SpeedParam = "Speed";
+
+    [Header("Medo da luz")]
+    public float fearDuration = 3f; // tempo que foge da luz
+    private float fearTimer = 0f;
+    private Vector3 fearDirection;
 
     private Vector3 lastHeardPos;
     private bool chasing = false;
     private float cooldownTimer = 0f;
     private float timeSinceHeard = 0f;
 
-    // debug
     private bool heardSomething = false;
     private float lastHeardDistance = 0f;
     private float lastEffectiveRange = 0f;
@@ -42,9 +46,7 @@ public class BlindEnemy : MonoBehaviour
     void Start()
     {
         if (patrolPoints.Length > 0 && agent != null)
-        {
             agent.SetDestination(patrolPoints[currentPatrolIndex].position);
-        }
     }
 
     void Update()
@@ -53,17 +55,24 @@ public class BlindEnemy : MonoBehaviour
         if (cooldownTimer > 0)
             cooldownTimer -= Time.deltaTime;
 
-        // Atualiza animação com base na velocidade
+        // Atualiza animação
         UpdateAnimation();
+
+        // Se com medo da luz
+        if (fearTimer > 0)
+        {
+            fearTimer -= Time.deltaTime;
+            agent.speed = runSpeed;
+            agent.SetDestination(transform.position + fearDirection); // foge
+            return;
+        }
 
         if (chasing)
         {
-            // Perseguir o som
             timeSinceHeard += Time.deltaTime;
             agent.speed = runSpeed;
             agent.SetDestination(lastHeardPos);
 
-            // Chegou ao destino
             if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
             {
                 chasing = false;
@@ -71,7 +80,6 @@ public class BlindEnemy : MonoBehaviour
                 Debug.Log($"{name} chegou na posição do som e parou de correr.");
             }
 
-            // Esqueceu o som
             if (timeSinceHeard >= forgetTime)
             {
                 chasing = false;
@@ -101,12 +109,12 @@ public class BlindEnemy : MonoBehaviour
 
         float targetSpeed = 0f;
 
-        if (chasing)
-            targetSpeed = 1f; // Correndo
+        if (fearTimer > 0 || chasing)
+            targetSpeed = 1f; // correndo
         else if (agent.velocity.magnitude > 0.1f)
-            targetSpeed = 0.5f; // Andando
+            targetSpeed = 0.5f; // andando
         else
-            targetSpeed = 0f; // Idle
+            targetSpeed = 0f; // idle
 
         animator.SetFloat(SpeedParam, targetSpeed);
     }
@@ -128,41 +136,22 @@ public class BlindEnemy : MonoBehaviour
             chasing = true;
             heardSomething = true;
             timeSinceHeard = 0f;
-            Debug.Log($"{name} ouviu som a {distance:F1}m (alcance {effectiveRange:F1}m). CORRENDO até o som!");
+            Debug.Log($"{name} ouviu som a {distance:F1}m. CORRENDO até o som!");
         }
         else
         {
             heardSomething = false;
-            Debug.Log($"{name} NÃO ouviu (distância {distance:F1}m / alcance {effectiveRange:F1}m).");
+            Debug.Log($"{name} NÃO ouviu o som.");
         }
     }
 
-    private void OnDrawGizmosSelected()
+    // Chamado para “assustar” o inimigo pela luz
+    public void ScaredByLight(Vector3 lightPos)
     {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, baseHearingRange);
-
-        if (heardSomething)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(lastHeardPos, 0.3f);
-            Gizmos.DrawLine(transform.position, lastHeardPos);
-        }
-
-        if (lastEffectiveRange > 0)
-        {
-            Gizmos.color = new Color(1f, 0.5f, 0f, 0.3f);
-            Gizmos.DrawWireSphere(transform.position, lastEffectiveRange);
-        }
-
-        if (patrolPoints != null && patrolPoints.Length > 0)
-        {
-            Gizmos.color = Color.green;
-            foreach (Transform p in patrolPoints)
-            {
-                if (p != null)
-                    Gizmos.DrawSphere(p.position, 0.2f);
-            }
-        }
+        fearTimer = fearDuration;
+        fearDirection = (transform.position - lightPos).normalized * 5f; // foge 5 metros
+        chasing = false;
+        heardSomething = false;
+        Debug.Log($"{name} tem medo da luz e está fugindo!");
     }
 }
