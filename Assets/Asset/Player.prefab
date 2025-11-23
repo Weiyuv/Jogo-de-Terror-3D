@@ -157,7 +157,6 @@ GameObject:
   - component: {fileID: 5720724303312652133}
   - component: {fileID: 1045798929866414586}
   - component: {fileID: 1649427137316328104}
-  - component: {fileID: 2293230155798204068}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -710,11 +709,3 @@ MonoBehaviour:
   delayRecuperacao: 1
   staminaImage: {fileID: 0}
   tempoSumir: 2
---- !u!81 &2293230155798204068
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7172554718443276297}
-  m_Enabled: 1

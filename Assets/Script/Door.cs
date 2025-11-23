@@ -1,10 +1,16 @@
 using UnityEngine;
-using UnityEngine.SceneManagement; // se quiser mudar de cena
+using UnityEngine.SceneManagement;
 
 public class Door : MonoBehaviour
 {
-    public string requiredKeyName = "Key"; // não usado neste exemplo, mas pode ser útil
+    public GameObject doorText; // Texto tipo "Pressione E para abrir"
     private bool inReach = false;
+
+    void Start()
+    {
+        if (doorText != null)
+            doorText.SetActive(false); // Começa invisível
+    }
 
     void Update()
     {
@@ -13,13 +19,12 @@ public class Door : MonoBehaviour
             PlayerInventory inv = FindObjectOfType<PlayerInventory>();
             if (inv != null && inv.hasKey)
             {
-                // Aqui finaliza o jogo
+                // Aqui você abre a porta / finaliza o jogo
                 Debug.Log("Você abriu a porta e venceu o jogo!");
-                // Se quiser fechar o jogo no build:
-                Application.Quit();
+                if (doorText != null)
+                    doorText.SetActive(false); // Esconde texto após abrir
 
-                // Se quiser mudar de cena em vez de fechar:
-                // SceneManager.LoadScene("CenaVitoria");
+                Application.Quit(); // ou SceneManager.LoadScene("CenaVitoria");
             }
             else
             {
@@ -31,12 +36,20 @@ public class Door : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
+        {
             inReach = true;
+            if (doorText != null)
+                doorText.SetActive(true); // Mostra texto ao entrar
+        }
     }
 
     void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
+        {
             inReach = false;
+            if (doorText != null)
+                doorText.SetActive(false); // Esconde texto ao sair
+        }
     }
 }
