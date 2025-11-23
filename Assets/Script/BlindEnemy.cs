@@ -34,6 +34,9 @@ public class BlindEnemy : MonoBehaviour
     [Header("Player Detection")]
     public float playerDestroyDistance = 1f;
 
+    [Header("Som do inimigo")]
+    public AudioSource heardSoundAudio; // Som quando detecta
+
     private Vector3 lastHeardPos;
     private bool chasing = false;
     private float cooldownTimer = 0f;
@@ -74,7 +77,6 @@ public class BlindEnemy : MonoBehaviour
     {
         if (agent == null) return;
 
-        // Medo da luz
         if (fearTimer > 0)
         {
             fearTimer -= Time.deltaTime;
@@ -105,9 +107,10 @@ public class BlindEnemy : MonoBehaviour
         }
         else
         {
-            // Patrulha
             agent.speed = walkSpeed;
-            if (patrolPoints.Length > 0 && (!agent.hasPath || agent.pathPending || agent.remainingDistance <= agent.stoppingDistance))
+
+            if (patrolPoints.Length > 0 &&
+                (!agent.hasPath || agent.pathPending || agent.remainingDistance <= agent.stoppingDistance))
             {
                 currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
                 agent.SetDestination(patrolPoints[currentPatrolIndex].position);
@@ -126,7 +129,7 @@ public class BlindEnemy : MonoBehaviour
         if (moveDir.sqrMagnitude > 0.001f)
         {
             Quaternion targetRot = Quaternion.LookRotation(moveDir);
-            float rotationSpeed = 180f; // graus por segundo
+            float rotationSpeed = 180f;
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
         }
     }
@@ -164,10 +167,19 @@ public class BlindEnemy : MonoBehaviour
 
         if (distance <= effectiveRange)
         {
+            // ----------------------------
+            // 🔥 SÓ TOCA O SOM SE ELE AINDA NÃO ESTAVA PERSEGUINDO
+            // ----------------------------
+            bool wasNotChasing = !chasing;
+
             lastHeardPos = soundPos;
             chasing = true;
             heardSomething = true;
             timeSinceHeard = 0f;
+
+            if (wasNotChasing && heardSoundAudio != null)
+                heardSoundAudio.Play();
+
             Debug.Log($"{name} ouviu som a {distance:F1}m. CORRENDO até o som!");
         }
         else

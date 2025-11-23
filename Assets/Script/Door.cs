@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 public class Door : MonoBehaviour
 {
     public GameObject doorText; // Texto tipo "Pressione E para abrir"
+    public string sceneToLoad = "CenaVitoria"; // Cena que será carregada
     private bool inReach = false;
 
     void Start()
@@ -19,12 +20,11 @@ public class Door : MonoBehaviour
             PlayerInventory inv = FindObjectOfType<PlayerInventory>();
             if (inv != null && inv.hasKey)
             {
-                // Aqui você abre a porta / finaliza o jogo
-                Debug.Log("Você abriu a porta e venceu o jogo!");
+                // Abre a porta e carrega a cena
                 if (doorText != null)
-                    doorText.SetActive(false); // Esconde texto após abrir
+                    doorText.SetActive(false); // Esconde o texto
 
-                Application.Quit(); // ou SceneManager.LoadScene("CenaVitoria");
+                SceneManager.LoadScene(sceneToLoad);
             }
             else
             {
