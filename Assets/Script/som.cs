@@ -51,7 +51,7 @@ public class som : MonoBehaviour
             if (running)
             {
                 PlayOnly(footstepsRun);
-                AlertEnemies(1.5f * soundRangeMultiplier);
+                AlertEnemies(3f * soundRangeMultiplier);
             }
             else if (crouching)
             {
@@ -61,7 +61,7 @@ public class som : MonoBehaviour
             else
             {
                 PlayOnly(footstepsNormal);
-                AlertEnemies(1f * soundRangeMultiplier);
+                AlertEnemies(0.5f * soundRangeMultiplier);
             }
         }
         else
