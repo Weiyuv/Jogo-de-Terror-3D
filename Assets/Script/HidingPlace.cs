@@ -16,6 +16,10 @@ public class HidingPlace : MonoBehaviour
     public Transform hidePlayerTransform;
     public float cameraMoveSpeed = 5f;
 
+    [Header("Lanterna")]
+    public Light spotLight;          // sua luz do NormalFlash
+    private float spotIntensity;     // guarda intensidade original da luz
+
     private Renderer[] playerRenderers;
 
     private bool interactable = false;
@@ -23,7 +27,7 @@ public class HidingPlace : MonoBehaviour
     private Vector3 originalCameraLocalPos;
     private Vector3 originalPlayerPos;
 
-    // 👇 ADICIONADO — script de movimento
+    // 👇 Script de movimento do player
     private MOV3 move;
 
     private void Start()
@@ -36,7 +40,7 @@ public class HidingPlace : MonoBehaviour
 
         playerRenderers = player.GetComponentsInChildren<Renderer>();
 
-        // 👇 PEGA O SEU SCRIPT DE MOVIMENTO
+        // 👇 pega script de movimento
         move = player.GetComponent<MOV3>();
 
         if (cameraTransform == null)
@@ -51,6 +55,10 @@ public class HidingPlace : MonoBehaviour
             hideText.SetActive(false);
         if (exitText != null)
             exitText.SetActive(false);
+
+        // 👇 guarda intensidade original da lanterna
+        if (spotLight != null)
+            spotIntensity = spotLight.intensity;
     }
 
     private void OnTriggerStay(Collider other)
@@ -105,9 +113,13 @@ public class HidingPlace : MonoBehaviour
         foreach (Renderer r in playerRenderers)
             r.enabled = !hide;
 
-        // 👇 ATIVA/DESATIVA MOVIMENTO DO PLAYER
+        // 👇 ativa/desativa movimento do player
         if (move != null)
             move.enabled = !hide;
+
+        // 👇 desliga/religa spotLight
+        if (spotLight != null)
+            spotLight.intensity = hide ? 0f : spotIntensity;
 
         if (hide)
         {
