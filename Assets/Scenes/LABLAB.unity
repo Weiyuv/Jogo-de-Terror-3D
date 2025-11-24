@@ -311,9 +311,9 @@ MonoBehaviour:
   agent: {fileID: 14695094}
   baseHearingRange: 25
   cooldown: 1
-  forgetTime: 4
+  forgetTime: 2
   walkSpeed: 3
-  runSpeed: 6
+  runSpeed: 7
   patrolPoints:
   - {fileID: 736628743}
   - {fileID: 1171582422}
@@ -472,8 +472,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.0985184, y: 1.4279795, z: 1.4747429}
-  m_Center: {x: 0.019029617, y: 0.5935354, z: 0.06383324}
+  m_Size: {x: 1.0289135, y: 1.3383415, z: 1.3518639}
+  m_Center: {x: 0.018809319, y: 0.5487164, z: 0.06413078}
 --- !u!1 &22572664
 GameObject:
   m_ObjectHideFlags: 0
