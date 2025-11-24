@@ -3249,8 +3249,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2, y: 2.7377257, z: 1}
-  m_Center: {x: 0, y: -0.2878117, z: 0}
+  m_Size: {x: 0.9196415, y: 2.7377257, z: 1}
+  m_Center: {x: -0.54017925, y: -0.28781176, z: 0}
 --- !u!114 &509482187
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3265,7 +3265,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Door
   doorText: {fileID: 921142237}
   needKeyText: {fileID: 276764176}
-  sceneToLoad: Menu
+  sceneToLoad: WIN
 --- !u!1 &527086360
 GameObject:
   m_ObjectHideFlags: 0
@@ -6907,7 +6907,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 483f9da8502658744b6f662d24d8ed25, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 483f9da8502658744b6f662d24d8ed25, type: 3}
       propertyPath: m_TagString
