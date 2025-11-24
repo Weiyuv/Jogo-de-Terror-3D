@@ -17,7 +17,7 @@ RenderSettings:
   m_Fog: 1
   m_FogColor: {r: 0.06918234, g: 0.06918234, b: 0.06918234, a: 1}
   m_FogMode: 2
-  m_FogDensity: 0.1
+  m_FogDensity: 0.15
   m_LinearFogStart: 0
   m_LinearFogEnd: 500
   m_AmbientSkyColor: {r: 0.009433955, g: 0.009433955, b: 0.009433955, a: 1}
@@ -794,7 +794,8 @@ MonoBehaviour:
   blindEnemies: []
   player: {fileID: 1274550859}
   trapCollider: {fileID: 41771769}
-  soundRangeMultiplier: 5
+  soundRangeMultiplier: 2
+  reuseDelay: 2
 --- !u!65 &41771769
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1827,7 +1828,8 @@ MonoBehaviour:
   blindEnemies: []
   player: {fileID: 1274550859}
   trapCollider: {fileID: 167465109}
-  soundRangeMultiplier: 5
+  soundRangeMultiplier: 2
+  reuseDelay: 2
 --- !u!65 &167465109
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3212,7 +3214,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -16.295, y: 3.908, z: -0.016}
+  m_LocalPosition: {x: -16.454, y: 3.973, z: -0.025}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3548,7 +3550,7 @@ Transform:
   m_GameObject: {fileID: 395270858}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -16.295, y: 3.908, z: -0.016}
+  m_LocalPosition: {x: -16.454, y: 3.973, z: -0.025}
   m_LocalScale: {x: 1.2549489, y: 2.9597971, z: 1.2549491}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4044,7 +4046,8 @@ MonoBehaviour:
   blindEnemies: []
   player: {fileID: 1274550859}
   trapCollider: {fileID: 462704933}
-  soundRangeMultiplier: 5
+  soundRangeMultiplier: 2
+  reuseDelay: 2
 --- !u!65 &462704933
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4266,7 +4269,8 @@ MonoBehaviour:
   blindEnemies: []
   player: {fileID: 1274550859}
   trapCollider: {fileID: 508471637}
-  soundRangeMultiplier: 5
+  soundRangeMultiplier: 2
+  reuseDelay: 2
 --- !u!65 &508471637
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5279,7 +5283,8 @@ MonoBehaviour:
   blindEnemies: []
   player: {fileID: 1274550859}
   trapCollider: {fileID: 611486935}
-  soundRangeMultiplier: 5
+  soundRangeMultiplier: 2
+  reuseDelay: 2
 --- !u!65 &611486935
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5806,7 +5811,8 @@ MonoBehaviour:
   blindEnemies: []
   player: {fileID: 1274550859}
   trapCollider: {fileID: 673830427}
-  soundRangeMultiplier: 5
+  soundRangeMultiplier: 2
+  reuseDelay: 2
 --- !u!65 &673830427
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6237,7 +6243,7 @@ RectTransform:
   m_GameObject: {fileID: 717236586}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1761975088}
@@ -6268,7 +6274,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 216ae2da402dee34f82ef5b6ba498955, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 68d987067d2271a4abda8b2803f26dd9, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -6978,7 +6984,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -228.4}
+  m_AnchoredPosition: {x: 0, y: -279.5}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &818241947
@@ -7001,7 +7007,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 09ec7d190a9d78e4cbfd1318a292e0d8, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a3a0d6e4eb01aee4396e6b794ca8ed68, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -8793,7 +8799,8 @@ MonoBehaviour:
   blindEnemies: []
   player: {fileID: 1274550859}
   trapCollider: {fileID: 1108456530}
-  soundRangeMultiplier: 5
+  soundRangeMultiplier: 2
+  reuseDelay: 2
 --- !u!65 &1108456530
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -9919,7 +9926,8 @@ MonoBehaviour:
   blindEnemies: []
   player: {fileID: 1274550859}
   trapCollider: {fileID: 1240072513}
-  soundRangeMultiplier: 5
+  soundRangeMultiplier: 2
+  reuseDelay: 2
 --- !u!65 &1240072513
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -10059,7 +10067,8 @@ MonoBehaviour:
   blindEnemies: []
   player: {fileID: 1274550859}
   trapCollider: {fileID: 1240096145}
-  soundRangeMultiplier: 5
+  soundRangeMultiplier: 2
+  reuseDelay: 2
 --- !u!65 &1240096145
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -10584,7 +10593,8 @@ MonoBehaviour:
   blindEnemies: []
   player: {fileID: 1274550859}
   trapCollider: {fileID: 1328290855}
-  soundRangeMultiplier: 5
+  soundRangeMultiplier: 2
+  reuseDelay: 2
 --- !u!65 &1328290855
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -10617,7 +10627,7 @@ PrefabInstance:
     - target: {fileID: 3416186546731842687, guid: a1ccba7745c0787409495becac71eb94, type: 3}
       propertyPath: pickUpText
       value: 
-      objectReference: {fileID: 1324284582}
+      objectReference: {fileID: 1667232028}
     - target: {fileID: 4097415072726231879, guid: a1ccba7745c0787409495becac71eb94, type: 3}
       propertyPath: m_LocalScale.x
       value: 3.7871
@@ -10831,7 +10841,8 @@ MonoBehaviour:
   blindEnemies: []
   player: {fileID: 1274550859}
   trapCollider: {fileID: 1371570268}
-  soundRangeMultiplier: 5
+  soundRangeMultiplier: 2
+  reuseDelay: 2
 --- !u!65 &1371570268
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -14520,6 +14531,10 @@ PrefabInstance:
     - target: {fileID: -5279527298516448351, guid: 9a443fe30752a4b478cc1ad6ec219f11, type: 3}
       propertyPath: m_LocalPosition.y
       value: 3.46
+      objectReference: {fileID: 0}
+    - target: {fileID: -5278041981429145930, guid: 9a443fe30752a4b478cc1ad6ec219f11, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -22.40018
       objectReference: {fileID: 0}
     - target: {fileID: -5278041981429145930, guid: 9a443fe30752a4b478cc1ad6ec219f11, type: 3}
       propertyPath: m_LocalPosition.y
@@ -22806,6 +22821,10 @@ PrefabInstance:
       value: 3.46
       objectReference: {fileID: 0}
     - target: {fileID: 8443527067453966025, guid: 9a443fe30752a4b478cc1ad6ec219f11, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.0429
+      objectReference: {fileID: 0}
+    - target: {fileID: 8443527067453966025, guid: 9a443fe30752a4b478cc1ad6ec219f11, type: 3}
       propertyPath: m_LocalPosition.y
       value: 3.46
       objectReference: {fileID: 0}
@@ -25276,7 +25295,8 @@ MonoBehaviour:
   blindEnemies: []
   player: {fileID: 1274550859}
   trapCollider: {fileID: 1791843834}
-  soundRangeMultiplier: 5
+  soundRangeMultiplier: 2
+  reuseDelay: 2
 --- !u!65 &1791843834
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -25416,7 +25436,8 @@ MonoBehaviour:
   blindEnemies: []
   player: {fileID: 1274550859}
   trapCollider: {fileID: 1794895621}
-  soundRangeMultiplier: 5
+  soundRangeMultiplier: 2
+  reuseDelay: 2
 --- !u!65 &1794895621
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -26183,7 +26204,8 @@ MonoBehaviour:
   blindEnemies: []
   player: {fileID: 1274550859}
   trapCollider: {fileID: 1900440953}
-  soundRangeMultiplier: 5
+  soundRangeMultiplier: 2
+  reuseDelay: 2
 --- !u!65 &1900440953
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -26948,7 +26970,8 @@ MonoBehaviour:
   blindEnemies: []
   player: {fileID: 1274550859}
   trapCollider: {fileID: 1939972308}
-  soundRangeMultiplier: 5
+  soundRangeMultiplier: 2
+  reuseDelay: 2
 --- !u!65 &1939972308
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -27687,7 +27710,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1002625253549238770, guid: 5b82ba609cf87fb4ebfa2d1f8155116f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -16.26
+      value: -16.48
       objectReference: {fileID: 0}
     - target: {fileID: 1002625253549238770, guid: 5b82ba609cf87fb4ebfa2d1f8155116f, type: 3}
       propertyPath: m_LocalPosition.y
@@ -27699,7 +27722,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1002625253549238770, guid: 5b82ba609cf87fb4ebfa2d1f8155116f, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071068
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1002625253549238770, guid: 5b82ba609cf87fb4ebfa2d1f8155116f, type: 3}
       propertyPath: m_LocalRotation.x
@@ -27707,7 +27730,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1002625253549238770, guid: 5b82ba609cf87fb4ebfa2d1f8155116f, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.7071068
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1002625253549238770, guid: 5b82ba609cf87fb4ebfa2d1f8155116f, type: 3}
       propertyPath: m_LocalRotation.z
@@ -27719,7 +27742,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1002625253549238770, guid: 5b82ba609cf87fb4ebfa2d1f8155116f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 90
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1002625253549238770, guid: 5b82ba609cf87fb4ebfa2d1f8155116f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -27779,11 +27802,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3825186384693352232, guid: 5b82ba609cf87fb4ebfa2d1f8155116f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.735
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 3825186384693352232, guid: 5b82ba609cf87fb4ebfa2d1f8155116f, type: 3}
       propertyPath: m_LocalPosition.z
       value: -0.035
+      objectReference: {fileID: 0}
+    - target: {fileID: 5154020348870523712, guid: 5b82ba609cf87fb4ebfa2d1f8155116f, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5264544197513235604, guid: 5b82ba609cf87fb4ebfa2d1f8155116f, type: 3}
       propertyPath: m_Volume
