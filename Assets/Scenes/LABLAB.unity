@@ -362,7 +362,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 9f820f3fadd5e7e4688009150716d068, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.746
+  m_Volume: 0.2
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -6907,7 +6907,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 483f9da8502658744b6f662d24d8ed25, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 483f9da8502658744b6f662d24d8ed25, type: 3}
       propertyPath: m_TagString
@@ -6985,6 +6985,17 @@ CharacterController:
   m_CorrespondingSourceObject: {fileID: 5154020348870523712, guid: 5b82ba609cf87fb4ebfa2d1f8155116f, type: 3}
   m_PrefabInstance: {fileID: 6024764457653409298}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1274550869 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1649427137316328104, guid: 5b82ba609cf87fb4ebfa2d1f8155116f, type: 3}
+  m_PrefabInstance: {fileID: 6024764457653409298}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1274550859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 488ebadd5b5db8748abb1084ba94d484, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MOV3
 --- !u!1001 &1292808586
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21546,7 +21557,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 02279411783a11949a8b7d8f67b280b8, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.2
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -22889,6 +22900,10 @@ PrefabInstance:
       propertyPath: jumpSound
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 1045798929866414586, guid: 5b82ba609cf87fb4ebfa2d1f8155116f, type: 3}
+      propertyPath: playerMov
+      value: 
+      objectReference: {fileID: 1274550869}
     - target: {fileID: 1045798929866414586, guid: 5b82ba609cf87fb4ebfa2d1f8155116f, type: 3}
       propertyPath: playerController
       value: 

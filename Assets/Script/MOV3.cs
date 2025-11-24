@@ -19,15 +19,12 @@ public class MOV3 : MonoBehaviour
     public float gastoPulo = 15f;
 
     [Header("Cabeça / Câmera")]
-    [Tooltip("Arraste aqui o Transform da câmera (ou da cabeça)")]
     public Transform headCamera;
-    [Tooltip("Quanto a cabeça desce ao agachar")]
     public float alturaHead = 0.5f;
     public float suavizacaoAgachar = 5f;
     private Vector3 posCameraOriginal;
     private Vector3 posCameraAgachar;
 
-    // Câmera do MOV (nova)
     private Transform myCamera;
 
     [Header("Chão")]
@@ -37,7 +34,6 @@ public class MOV3 : MonoBehaviour
 
     [Header("Stamina")]
     public float staminaMax = 100f;
-    private float stamina;
     public float gastoCorrida = 20f;
     public float recuperacaoStamina = 15f;
     public float delayRecuperacao = 1f;
@@ -46,21 +42,16 @@ public class MOV3 : MonoBehaviour
     public float tempoSumir = 2f;
     private float timerSumir = 0f;
 
+    // ✅ Stamina pública para outros scripts
+    public float stamina { get; private set; }
+
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
-
-        // Câmera do MOV
         myCamera = Camera.main.transform;
 
-        // Caso o dev esqueça de colocar headCamera
-        if (headCamera == null)
-        {
-            if (Camera.main != null)
-                headCamera = Camera.main.transform;
-            else
-                Debug.LogWarning("⚠️ Nenhuma câmera atribuída em 'headCamera'!");
-        }
+        if (headCamera == null && Camera.main != null)
+            headCamera = Camera.main.transform;
 
         if (headCamera != null)
         {
@@ -74,18 +65,15 @@ public class MOV3 : MonoBehaviour
             staminaImage.gameObject.SetActive(false);
     }
 
-    void Update()
+    private void Update()
     {
         if (headCamera == null) return;
 
-        // Rotação EXATA do MOV (agora usando myCamera)
         transform.eulerAngles = new Vector3(0, myCamera.eulerAngles.y, 0);
 
-        // Movimento WASD
         entradasJogador = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
         entradasJogador = transform.TransformDirection(entradasJogador);
 
-        // Verificar chão
         estaNoChao = Physics.CheckSphere(veficadorChao.position, raioChao, cenarioMask);
 
         bool gastandoStamina = false;
@@ -99,10 +87,9 @@ public class MOV3 : MonoBehaviour
             gastandoStamina = true;
         }
 
-        // Gravidade
         velocidadeVertical += gravidade * Time.deltaTime;
 
-        // Agachar / mover a cabeça
+        // Agachar / câmera
         bool agachando = Input.GetKey(KeyCode.LeftControl);
         Vector3 alvoCamera = agachando ? posCameraAgachar : posCameraOriginal;
         headCamera.localPosition = Vector3.Lerp(headCamera.localPosition, alvoCamera, Time.deltaTime * suavizacaoAgachar);
@@ -129,15 +116,13 @@ public class MOV3 : MonoBehaviour
                 timerRecuperacao += Time.deltaTime;
         }
 
+        // Limita stamina e desativa corrida se zerar
         stamina = Mathf.Clamp(stamina, 0, staminaMax);
 
-        // Calcular movimento final
         Vector3 movimento = entradasJogador * velocidadeAtual * Time.deltaTime;
         movimento.y = velocidadeVertical * Time.deltaTime;
 
-        // Mover personagem
         CollisionFlags flags = characterController.Move(movimento);
-
         if ((flags & CollisionFlags.Below) != 0 && velocidadeVertical < 0)
             velocidadeVertical = 0f;
 

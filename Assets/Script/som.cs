@@ -26,16 +26,16 @@ public class som : MonoBehaviour
     [Range(0f, 5f)]
     public float soundRangeMultiplier = 1f;
 
+    [Header("Player")]
+    public MOV3 playerMov; // referência ao MOV3
+
     void Update()
     {
-        // Atualiza lista de inimigos caso esteja vazia
         if (blindEnemies == null || blindEnemies.Length == 0)
             blindEnemies = Object.FindObjectsByType<BlindEnemy>(FindObjectsSortMode.None);
 
-        // Verifica chão
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
-        // Movimento
         bool moving =
             Input.GetKey(KeyCode.W) ||
             Input.GetKey(KeyCode.A) ||
@@ -45,18 +45,22 @@ public class som : MonoBehaviour
         bool running = Input.GetKey(runKey);
         bool crouching = Input.GetKey(crouchKey);
 
-        // --- SOM DE PASSOS ---
         if (moving && isGrounded)
         {
-            if (running)
+            if (running && playerMov != null && playerMov.stamina > 0)
             {
                 PlayOnly(footstepsRun);
                 AlertEnemies(3f * soundRangeMultiplier);
             }
+            else if (running && (playerMov == null || playerMov.stamina <= 0))
+            {
+                PlayOnly(footstepsNormal);
+                AlertEnemies(0.5f * soundRangeMultiplier);
+            }
             else if (crouching)
             {
                 PlayOnly(footstepsCrouch);
-                AlertEnemies(0f); // agachado → inimigo não ouve
+                AlertEnemies(0f);
             }
             else
             {
@@ -69,13 +73,12 @@ public class som : MonoBehaviour
             StopAll();
         }
 
-        // --- SOM DE PULO ---
         if (Input.GetKeyDown(jumpKey) && isGrounded)
         {
             if (jumpSound != null)
                 jumpSound.PlayOneShot(jumpSound.clip);
 
-            AlertEnemies(0f * soundRangeMultiplier); // pulo → inimigo ouve
+            AlertEnemies(0f * soundRangeMultiplier);
         }
     }
 
