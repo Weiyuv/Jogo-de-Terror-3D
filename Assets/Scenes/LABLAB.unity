@@ -311,7 +311,7 @@ MonoBehaviour:
   agent: {fileID: 14695094}
   baseHearingRange: 25
   cooldown: 1
-  forgetTime: 2
+  forgetTime: 1.5
   walkSpeed: 2
   runSpeed: 6
   patrolPoints:

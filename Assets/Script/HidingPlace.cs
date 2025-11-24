@@ -23,6 +23,8 @@ public class HidingPlace : MonoBehaviour
     private Vector3 savedPlayerPos;
     private Quaternion savedPlayerRot;
 
+    private Renderer[] playerRenderers;
+
     private void Start()
     {
         if (spotLight != null)
@@ -31,10 +33,11 @@ public class HidingPlace : MonoBehaviour
         if (hideText) hideText.SetActive(false);
         if (exitText) exitText.SetActive(false);
 
-        // a câmera do esconderijo inicia ativa como objeto,
-        // mas com o componente Camera desligado
         if (hideCamera != null)
             hideCamera.enabled = false;
+
+        // pega todos os renderers do player
+        playerRenderers = player.GetComponentsInChildren<Renderer>();
     }
 
     private void OnTriggerStay(Collider other)
@@ -77,8 +80,9 @@ public class HidingPlace : MonoBehaviour
             savedPlayerPos = player.transform.position;
             savedPlayerRot = player.transform.rotation;
 
-            // desligar player COMPLETAMENTE
-            player.SetActive(false);
+            // desligar render do player (visual)
+            foreach (var rend in playerRenderers)
+                rend.enabled = false;
 
             // desligar a câmera principal
             if (mainCamera != null)
@@ -97,8 +101,11 @@ public class HidingPlace : MonoBehaviour
         }
         else
         {
-            // reativar player no mesmo lugar
-            player.SetActive(true);
+            // reativar render do player
+            foreach (var rend in playerRenderers)
+                rend.enabled = true;
+
+            // reposicionar player (opcional)
             player.transform.position = savedPlayerPos;
             player.transform.rotation = savedPlayerRot;
 
