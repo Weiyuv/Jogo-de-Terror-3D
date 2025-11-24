@@ -32,7 +32,7 @@ public class BlindEnemy : MonoBehaviour
     private float hopTimer = 0f;
 
     [Header("Player Detection")]
-    public float playerDestroyDistance = 1f;
+    public float playerDestroyDistance = 1f; // usado só para definir o tamanho do SphereCollider
 
     [Header("Som do inimigo")]
     public AudioSource heardSoundAudio;
@@ -60,7 +60,7 @@ public class BlindEnemy : MonoBehaviour
 
         player = GameObject.FindWithTag("Player");
 
-        // Adiciona collider trigger para detectar o player
+        // Configurar collider de trigger para matar o player
         SphereCollider attackCollider = gameObject.AddComponent<SphereCollider>();
         attackCollider.isTrigger = true;
         attackCollider.radius = playerDestroyDistance;
@@ -105,26 +105,6 @@ public class BlindEnemy : MonoBehaviour
             {
                 chasing = false;
                 heardSomething = false;
-
-                // Volta para o ponto de patrulha mais próximo
-                if (patrolPoints.Length > 0)
-                {
-                    int closestIndex = 0;
-                    float closestDist = Vector3.Distance(transform.position, patrolPoints[0].position);
-
-                    for (int i = 1; i < patrolPoints.Length; i++)
-                    {
-                        float dist = Vector3.Distance(transform.position, patrolPoints[i].position);
-                        if (dist < closestDist)
-                        {
-                            closestDist = dist;
-                            closestIndex = i;
-                        }
-                    }
-
-                    currentPatrolIndex = closestIndex;
-                    agent.SetDestination(patrolPoints[currentPatrolIndex].position);
-                }
             }
         }
         else

@@ -326,7 +326,7 @@ MonoBehaviour:
   animator: {fileID: 14695097}
   fearDuration: 1
   hopHeight: 0
-  hopCooldown: 0.2
+  hopCooldown: 0.1
   playerDestroyDistance: 1.1
   heardSoundAudio: {fileID: 14695098}
 --- !u!95 &14695097

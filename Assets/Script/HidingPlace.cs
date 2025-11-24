@@ -52,7 +52,7 @@ public class HidingPlace : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") || other.CompareTag("Hidden"))
         {
             interactable = false;
             if (hideText) hideText.SetActive(false);
@@ -76,6 +76,9 @@ public class HidingPlace : MonoBehaviour
     {
         if (hide)
         {
+            // trocar tag para hidden
+            player.tag = "Hidden";
+
             // salvar posição do player
             savedPlayerPos = player.transform.position;
             savedPlayerRot = player.transform.rotation;
@@ -101,11 +104,14 @@ public class HidingPlace : MonoBehaviour
         }
         else
         {
+            // restaurar tag
+            player.tag = "Player";
+
             // reativar render do player
             foreach (var rend in playerRenderers)
                 rend.enabled = true;
 
-            // reposicionar player (opcional)
+            // reposicionar player
             player.transform.position = savedPlayerPos;
             player.transform.rotation = savedPlayerRot;
 
