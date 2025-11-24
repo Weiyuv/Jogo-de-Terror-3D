@@ -35,7 +35,7 @@ public class BlindEnemy : MonoBehaviour
     public float playerDestroyDistance = 1f;
 
     [Header("Som do inimigo")]
-    public AudioSource heardSoundAudio; // Som quando detecta
+    public AudioSource heardSoundAudio;
 
     private Vector3 lastHeardPos;
     private bool chasing = false;
@@ -59,6 +59,11 @@ public class BlindEnemy : MonoBehaviour
             agent.SetDestination(patrolPoints[currentPatrolIndex].position);
 
         player = GameObject.FindWithTag("Player");
+
+        // Adiciona collider trigger para detectar o player
+        SphereCollider attackCollider = gameObject.AddComponent<SphereCollider>();
+        attackCollider.isTrigger = true;
+        attackCollider.radius = playerDestroyDistance;
     }
 
     void Update()
@@ -70,7 +75,6 @@ public class BlindEnemy : MonoBehaviour
         RotateTowardsMovementDirection();
         HandleHopVertical();
         UpdateAnimation();
-        CheckPlayer();
     }
 
     private void HandleMovement()
@@ -95,14 +99,32 @@ public class BlindEnemy : MonoBehaviour
             {
                 chasing = false;
                 cooldownTimer = cooldown;
-                Debug.Log($"{name} chegou na posição do som e parou de correr.");
             }
 
             if (timeSinceHeard >= forgetTime)
             {
                 chasing = false;
                 heardSomething = false;
-                Debug.Log($"{name} esqueceu o som e voltou ao normal.");
+
+                // Volta para o ponto de patrulha mais próximo
+                if (patrolPoints.Length > 0)
+                {
+                    int closestIndex = 0;
+                    float closestDist = Vector3.Distance(transform.position, patrolPoints[0].position);
+
+                    for (int i = 1; i < patrolPoints.Length; i++)
+                    {
+                        float dist = Vector3.Distance(transform.position, patrolPoints[i].position);
+                        if (dist < closestDist)
+                        {
+                            closestDist = dist;
+                            closestIndex = i;
+                        }
+                    }
+
+                    currentPatrolIndex = closestIndex;
+                    agent.SetDestination(patrolPoints[currentPatrolIndex].position);
+                }
             }
         }
         else
@@ -167,9 +189,6 @@ public class BlindEnemy : MonoBehaviour
 
         if (distance <= effectiveRange)
         {
-            // ----------------------------
-            // 🔥 SÓ TOCA O SOM SE ELE AINDA NÃO ESTAVA PERSEGUINDO
-            // ----------------------------
             bool wasNotChasing = !chasing;
 
             lastHeardPos = soundPos;
@@ -179,13 +198,10 @@ public class BlindEnemy : MonoBehaviour
 
             if (wasNotChasing && heardSoundAudio != null)
                 heardSoundAudio.Play();
-
-            Debug.Log($"{name} ouviu som a {distance:F1}m. CORRENDO até o som!");
         }
         else
         {
             heardSomething = false;
-            Debug.Log($"{name} NÃO ouviu o som.");
         }
     }
 
@@ -195,19 +211,17 @@ public class BlindEnemy : MonoBehaviour
         fearDirection = (transform.position - lightPos).normalized * 5f;
         chasing = false;
         heardSomething = false;
-        Debug.Log($"{name} tem medo da luz e está fugindo!");
     }
 
-    private void CheckPlayer()
+    // =========================
+    // Trigger para destruir player
+    // =========================
+    private void OnTriggerEnter(Collider other)
     {
-        if (player == null) return;
-
-        float distance = Vector3.Distance(transform.position, player.transform.position);
-
-        if (distance <= playerDestroyDistance)
+        if (other.CompareTag("Player"))
         {
             Debug.Log($"{name} atacou o Player! PLAYER MORTO!");
-            Destroy(player);
+            Destroy(other.gameObject);
         }
     }
 }
