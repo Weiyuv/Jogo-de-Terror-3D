@@ -50,12 +50,12 @@ public class som : MonoBehaviour
             if (running && playerMov != null && playerMov.stamina > 0)
             {
                 PlayOnly(footstepsRun);
-                AlertEnemies(3f * soundRangeMultiplier);
+                AlertEnemies(2f * soundRangeMultiplier);
             }
             else if (running && (playerMov == null || playerMov.stamina <= 0))
             {
                 PlayOnly(footstepsNormal);
-                AlertEnemies(1f * soundRangeMultiplier);
+                AlertEnemies(0.8f * soundRangeMultiplier);
             }
             else if (crouching)
             {
@@ -65,7 +65,7 @@ public class som : MonoBehaviour
             else
             {
                 PlayOnly(footstepsNormal);
-                AlertEnemies(1f * soundRangeMultiplier);
+                AlertEnemies(0.8f * soundRangeMultiplier);
             }
         }
         else

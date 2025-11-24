@@ -17,7 +17,7 @@ RenderSettings:
   m_Fog: 1
   m_FogColor: {r: 0.06918234, g: 0.06918234, b: 0.06918234, a: 1}
   m_FogMode: 2
-  m_FogDensity: 0.2
+  m_FogDensity: 0.1
   m_LinearFogStart: 0
   m_LinearFogEnd: 500
   m_AmbientSkyColor: {r: 0.009433955, g: 0.009433955, b: 0.009433955, a: 1}
@@ -27,7 +27,7 @@ RenderSettings:
   m_AmbientMode: 3
   m_SubtractiveShadowColor: {r: 0.2745098, g: 0.509804, b: 0.7058824, a: 1}
   m_SkyboxMaterial: {fileID: 0}
-  m_HaloStrength: 1
+  m_HaloStrength: 0
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
   m_HaloTexture: {fileID: 0}
@@ -325,7 +325,7 @@ MonoBehaviour:
   fearDuration: 1
   hopHeight: 0
   hopCooldown: 0.2
-  playerDestroyDistance: 1.1
+  playerDestroyDistance: 1.09
   heardSoundAudio: {fileID: 14695098}
 --- !u!95 &14695097
 Animator:
@@ -3670,7 +3670,7 @@ Light:
   m_InnerSpotAngle: 8
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 1
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
