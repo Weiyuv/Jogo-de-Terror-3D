@@ -3,32 +3,59 @@ using UnityEngine.SceneManagement;
 
 public class Door : MonoBehaviour
 {
-    public GameObject doorText; // Texto tipo "Pressione E para abrir"
-    public string sceneToLoad = "CenaVitoria"; // Cena que será carregada
+    [Header("UI")]
+    public GameObject doorText;      // Texto "Pressione E para abrir"
+    public GameObject needKeyText;   // Texto "Você precisa da chave!"
+
+    [Header("Cena")]
+    public string sceneToLoad = "CenaVitoria";
+
     private bool inReach = false;
+    private float keyTextTimer = 0f;
+    private float keyTextDuration = 2f; // tempo que a mensagem fica na tela
 
     void Start()
     {
         if (doorText != null)
-            doorText.SetActive(false); // Começa invisível
+            doorText.SetActive(false);
+
+        if (needKeyText != null)
+            needKeyText.SetActive(false);
     }
 
     void Update()
     {
+        // SE O JOGADOR ESTIVER PERTO E APERTAR E
         if (inReach && Input.GetKeyDown(KeyCode.E))
         {
-            PlayerInventory inv = FindObjectOfType<PlayerInventory>();
+            PlayerInventory inv = FindFirstObjectByType<PlayerInventory>();
+
             if (inv != null && inv.hasKey)
             {
-                // Abre a porta e carrega a cena
+                // Abre a porta e troca de cena
                 if (doorText != null)
-                    doorText.SetActive(false); // Esconde o texto
+                    doorText.SetActive(false);
 
                 SceneManager.LoadScene(sceneToLoad);
             }
             else
             {
-                Debug.Log("Você precisa da chave para abrir a porta!");
+                // MOSTRA TEXTO DE "PRECISA DA CHAVE"
+                if (needKeyText != null)
+                {
+                    needKeyText.SetActive(true);
+                    keyTextTimer = keyTextDuration;
+                }
+            }
+        }
+
+        // Contagem para esconder texto "precisa da chave"
+        if (needKeyText != null && needKeyText.activeSelf)
+        {
+            keyTextTimer -= Time.deltaTime;
+            if (keyTextTimer <= 0)
+            {
+                needKeyText.SetActive(false);
             }
         }
     }
@@ -38,8 +65,9 @@ public class Door : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             inReach = true;
+
             if (doorText != null)
-                doorText.SetActive(true); // Mostra texto ao entrar
+                doorText.SetActive(true);
         }
     }
 
@@ -48,8 +76,12 @@ public class Door : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             inReach = false;
+
             if (doorText != null)
-                doorText.SetActive(false); // Esconde texto ao sair
+                doorText.SetActive(false);
+
+            if (needKeyText != null)
+                needKeyText.SetActive(false);
         }
     }
 }

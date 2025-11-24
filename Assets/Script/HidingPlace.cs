@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
 public class HidingPlace : MonoBehaviour
 {
@@ -9,56 +8,33 @@ public class HidingPlace : MonoBehaviour
 
     [Header("Player")]
     public GameObject player;
-    public Transform cameraTransform;
 
-    [Header("Esconderijo")]
-    public Transform hideCameraTransform;
-    public Transform hidePlayerTransform;
-    public float cameraMoveSpeed = 5f;
+    [Header("Câmeras")]
+    public Camera mainCamera;
+    public Camera hideCamera;
 
     [Header("Lanterna")]
-    public Light spotLight;          // sua luz do NormalFlash
-    private float spotIntensity;     // guarda intensidade original da luz
-
-    private Renderer[] playerRenderers;
+    public Light spotLight;
+    private float spotIntensity;
 
     private bool interactable = false;
     private bool hiding = false;
-    private Vector3 originalCameraLocalPos;
-    private Vector3 originalPlayerPos;
 
-    // 👇 Script de movimento do player
-    private MOV3 move;
+    private Vector3 savedPlayerPos;
+    private Quaternion savedPlayerRot;
 
     private void Start()
     {
-        if (player == null)
-        {
-            Debug.LogError("Player não atribuído!");
-            return;
-        }
-
-        playerRenderers = player.GetComponentsInChildren<Renderer>();
-
-        // 👇 pega script de movimento
-        move = player.GetComponent<MOV3>();
-
-        if (cameraTransform == null)
-            cameraTransform = Camera.main.transform;
-
-        if (cameraTransform != null)
-            originalCameraLocalPos = cameraTransform.localPosition;
-
-        originalPlayerPos = player.transform.position;
-
-        if (hideText != null)
-            hideText.SetActive(false);
-        if (exitText != null)
-            exitText.SetActive(false);
-
-        // 👇 guarda intensidade original da lanterna
         if (spotLight != null)
             spotIntensity = spotLight.intensity;
+
+        if (hideText) hideText.SetActive(false);
+        if (exitText) exitText.SetActive(false);
+
+        // a câmera do esconderijo inicia ativa como objeto,
+        // mas com o componente Camera desligado
+        if (hideCamera != null)
+            hideCamera.enabled = false;
     }
 
     private void OnTriggerStay(Collider other)
@@ -66,8 +42,7 @@ public class HidingPlace : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             interactable = true;
-
-            if (!hiding && hideText != null)
+            if (!hiding && hideText)
                 hideText.SetActive(true);
         }
     }
@@ -77,11 +52,8 @@ public class HidingPlace : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             interactable = false;
-
-            if (hideText != null)
-                hideText.SetActive(false);
-            if (exitText != null)
-                exitText.SetActive(false);
+            if (hideText) hideText.SetActive(false);
+            if (exitText) exitText.SetActive(false);
 
             if (hiding)
                 SetHiding(false);
@@ -95,43 +67,55 @@ public class HidingPlace : MonoBehaviour
             hiding = !hiding;
             SetHiding(hiding);
         }
-
-        if (cameraTransform != null)
-        {
-            Vector3 targetPos = hiding ? hideCameraTransform.localPosition : originalCameraLocalPos;
-            cameraTransform.localPosition = Vector3.Lerp(cameraTransform.localPosition, targetPos, Time.deltaTime * cameraMoveSpeed);
-        }
-
-        if (hiding && hidePlayerTransform != null)
-        {
-            player.transform.position = hidePlayerTransform.position;
-        }
     }
 
     private void SetHiding(bool hide)
     {
-        foreach (Renderer r in playerRenderers)
-            r.enabled = !hide;
-
-        // 👇 ativa/desativa movimento do player
-        if (move != null)
-            move.enabled = !hide;
-
-        // 👇 desliga/religa spotLight
-        if (spotLight != null)
-            spotLight.intensity = hide ? 0f : spotIntensity;
-
         if (hide)
         {
-            if (hideText != null) hideText.SetActive(false);
-            if (exitText != null) exitText.SetActive(true);
+            // salvar posição do player
+            savedPlayerPos = player.transform.position;
+            savedPlayerRot = player.transform.rotation;
+
+            // desligar player COMPLETAMENTE
+            player.SetActive(false);
+
+            // desligar a câmera principal
+            if (mainCamera != null)
+                mainCamera.enabled = false;
+
+            // ligar a câmera do esconderijo
+            if (hideCamera != null)
+                hideCamera.enabled = true;
+
+            // desligar lanterna
+            if (spotLight != null)
+                spotLight.intensity = 0f;
+
+            if (hideText) hideText.SetActive(false);
+            if (exitText) exitText.SetActive(true);
         }
         else
         {
-            if (hideText != null) hideText.SetActive(true);
-            if (exitText != null) exitText.SetActive(false);
+            // reativar player no mesmo lugar
+            player.SetActive(true);
+            player.transform.position = savedPlayerPos;
+            player.transform.rotation = savedPlayerRot;
 
-            player.transform.position = originalPlayerPos;
+            // ligar a câmera do player
+            if (mainCamera != null)
+                mainCamera.enabled = true;
+
+            // desligar câmera do esconderijo
+            if (hideCamera != null)
+                hideCamera.enabled = false;
+
+            // restaura lanterna
+            if (spotLight != null)
+                spotLight.intensity = spotIntensity;
+
+            if (hideText) hideText.SetActive(true);
+            if (exitText) exitText.SetActive(false);
         }
     }
 }
