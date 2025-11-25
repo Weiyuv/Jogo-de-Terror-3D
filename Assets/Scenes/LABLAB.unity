@@ -28488,6 +28488,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6ab2df8e9d72d540a768489b26a6161, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LockMouse
+  targetSceneName: LABLAB
 --- !u!1 &1910843899
 GameObject:
   m_ObjectHideFlags: 0
